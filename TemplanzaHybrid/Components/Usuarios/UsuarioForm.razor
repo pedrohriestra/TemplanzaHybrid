@@ -1,0 +1,74 @@
+﻿@using TemplanzaHybrid.Models
+@using Microsoft.AspNetCore.Components.Forms
+
+<EditForm class="form-usuario" Model="Model" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <InputText class="form-control" @bind-Value="Model.Nombre" />
+        <ValidationMessage For="() => Model.Nombre" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText class="form-control" @bind-Value="Model.Email" />
+        <ValidationMessage For="() => Model.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <InputText class="form-control" type="password" @bind-Value="Model.Password" />
+        <ValidationMessage For="() => Model.Password" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Rol</label>
+        <InputSelect class="form-select" @bind-Value="Model.Rol">
+            @foreach (var r in Roles)
+            {
+                <option value="@r">@r</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => Model.Rol" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Imagen (URL local)</label>
+        <input class="form-control" list="imgUsuarios" @bind="Model.ImagenUrl" />
+        <datalist id="imgUsuarios">
+            @foreach (var url in ImagenesSugeridas)
+            {
+                <option value="@url"></option>
+            }
+        </datalist>
+        <div class="form-text">Ej: /images/usuarios/admin.webp</div>
+        <ValidationMessage For="() => Model.ImagenUrl" />
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">@BotonGuardar</button>
+        <button type="button" class="btn btn-outline-secondary" @onclick="OnCancel">Cancelar</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public Usuario Model { get; set; } = new();
+    [Parameter] public bool EsEdicion { get; set; }
+    [Parameter] public EventCallback<Usuario> OnSubmit { get; set; }
+    [Parameter] public EventCallback OnCancelClick { get; set; }
+
+    private string BotonGuardar => EsEdicion ? "Guardar cambios" : "Crear";
+    private static readonly RolUsuario[] Roles = Enum.GetValues(typeof(RolUsuario)).Cast<RolUsuario>().ToArray();
+
+    // sugerencias estáticas (assets en wwwroot)
+    private readonly string[] ImagenesSugeridas = new[]
+    {
+        "/images/usuarios/admin.png",
+        "/images/usuarios/juana.png"
+    };
+
+    private Task Submit() => OnSubmit.InvokeAsync(Model);
+    private Task OnCancel() => OnCancelClick.InvokeAsync();
+}

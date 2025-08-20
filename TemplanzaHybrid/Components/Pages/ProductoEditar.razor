@@ -1,0 +1,67 @@
+﻿@page "/productos/nuevo"
+@page "/productos/editar/{Id:int}"
+
+@using TemplanzaHybrid.Models
+@using Microsoft.JSInterop
+@inject TemplanzaHybrid.Services.IBlendsService BlendsSvc
+@inject TemplanzaHybrid.Services.IAuthService Auth
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h2 class="titulo-seccion mb-3">@Titulo</h2>
+
+@if (!Auth.IsInRole(RolUsuario.Admin))
+{
+    <div class="alert alert-danger">Acceso restringido. Solo admin.</div>
+}
+else if (_model is null && Id.HasValue)
+{
+    <div class="alert alert-warning">Producto no encontrado.</div>
+}
+else
+{
+    <BlendForm Model="_model" EsEdicion="@EsEdicion"
+               OnSubmit="Guardar" OnCancelClick="Volver" />
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+    private Blend _model = new();
+    private bool EsEdicion => Id.HasValue;
+    private string Titulo => EsEdicion ? "Editar producto" : "Nuevo producto";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsInRole(RolUsuario.Admin))
+            return;
+
+        if (EsEdicion)
+        {
+            var item = await BlendsSvc.GetByIdAsync(Id!.Value);
+            if (item is not null) _model = new Blend
+            {
+                Id = item.Id,
+                Nombre = item.Nombre,
+                Tipo = item.Tipo,
+                Precio = item.Precio,
+                Stock = item.Stock,
+                ImagenUrl = item.ImagenUrl
+            };
+        }
+    }
+
+    private async Task Guardar(Blend p)
+    {
+        if (EsEdicion)
+            await BlendsSvc.UpdateAsync(p);
+        else
+            await BlendsSvc.AddAsync(p);
+
+        var msg = EsEdicion ? "Cambios guardados" : "Producto creado";
+        await JS.InvokeVoidAsync("templanza.notify", msg, "Productos");
+
+        Volver();
+    }
+
+    private void Volver() => Nav.NavigateTo("/productos");
+}

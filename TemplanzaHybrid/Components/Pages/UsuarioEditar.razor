@@ -1,0 +1,63 @@
+﻿@page "/usuarios/nuevo"
+@page "/usuarios/editar/{Id:int}"
+
+@using TemplanzaHybrid.Models
+@inject TemplanzaHybrid.Services.IUsuariosService UsuariosSvc
+@inject TemplanzaHybrid.Services.IAuthService Auth
+@inject NavigationManager Nav
+
+<h2 class="titulo-seccion mb-3">@Titulo</h2>
+
+@if (!Auth.IsInRole(RolUsuario.Admin))
+{
+    <div class="alert alert-danger">Acceso restringido. Solo admin.</div>
+}
+else if (_model is null && Id.HasValue)
+{
+    <div class="alert alert-warning">Usuario no encontrado.</div>
+}
+else
+{
+    <UsuarioForm Model="_model" EsEdicion="@EsEdicion"
+                 OnSubmit="Guardar" OnCancelClick="Volver" />
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+    private Usuario _model = new();
+    private bool EsEdicion => Id.HasValue;
+    private string Titulo => EsEdicion ? "Editar usuario" : "Nuevo usuario";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsInRole(RolUsuario.Admin))
+            return;
+
+        if (EsEdicion)
+        {
+            var u = await UsuariosSvc.GetByIdAsync(Id!.Value);
+            if (u is not null) _model = new Usuario
+            {
+                Id = u.Id,
+                Nombre = u.Nombre,
+                Email = u.Email,
+                Password = u.Password,
+                Rol = u.Rol,
+                ImagenUrl = u.ImagenUrl,
+                Activo = u.Activo
+            };
+        }
+    }
+
+    private async Task Guardar(Usuario u)
+    {
+        if (EsEdicion)
+            await UsuariosSvc.UpdateAsync(u);
+        else
+            await UsuariosSvc.AddAsync(u);
+
+        Volver();
+    }
+
+    private void Volver() => Nav.NavigateTo("/usuarios");
+}

@@ -1,0 +1,201 @@
+﻿/* ====== PALETA TEMPLANZA (tokens) ====== */
+:root {
+    /* Colores brand */
+    --clr-celeste: #96BDC6;
+    --clr-scarlet: #F42C04;
+    --clr-verde: #6A994E;
+    --clr-oro: #EDB458;
+    --clr-oliva: #393A10;
+    /* Neutros / superficies */
+    --clr-bg: #f8f9fa;
+    --clr-ink: #212529;
+    --clr-muted: #6c757d;
+    --clr-card: #ffffff;
+    --clr-border: #e5e7eb;
+    /* Bootstrap theme overrides */
+    --bs-primary: var(--clr-verde);
+    --bs-primary-rgb: 106,153,78; /* rgb de --clr-verde */
+    --bs-success: var(--clr-verde);
+    --bs-info: var(--clr-celeste);
+    --bs-warning: var(--clr-oro);
+    --bs-danger: var(--clr-scarlet);
+    --bs-dark: var(--clr-oliva);
+    --bs-link-color: var(--clr-verde);
+    --bs-link-hover-color: #5a8a46;
+    --bs-body-bg: var(--clr-bg);
+    --bs-body-color: var(--clr-ink);
+}
+
+/* ====== Base (dejamos tipografía default del template) ====== */
+/*#if (SampleContent)*/
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+a, .btn-link {
+    color: var(--bs-link-color);
+}
+/* no forcemos btn-primary: ya toma --bs-primary, pero dejamos fallback coherente */
+.btn-primary {
+    color: #fff;
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+/* Enfoque accesible usando el primario */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem #fff, 0 0 0 0.25rem rgba(var(--bs-primary-rgb), .45);
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+/*#endif*/
+
+h1:focus {
+    outline: none;
+}
+
+/* ====== Validaciones (verde / rojo de la paleta) ====== */
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid var(--clr-verde);
+}
+
+.invalid {
+    outline: 1px solid var(--clr-scarlet);
+}
+
+.validation-message {
+    color: var(--clr-scarlet);
+}
+
+/* ====== Navbar con tema oliva + acento oro ====== */
+.navbar-dark.bg-dark {
+    background-color: var(--clr-oliva) !important;
+}
+
+.navbar-dark .navbar-brand {
+    color: var(--clr-oro);
+}
+
+.navbar-dark .nav-link.active,
+.navbar-dark .nav-link.show {
+    color: var(--clr-oro) !important;
+}
+
+/* ====== Títulos & layout ====== */
+.titulo-seccion {
+    color: var(--clr-oliva);
+    font-weight: 700;
+}
+
+/* ====== Cards / paneles / tablas ====== */
+.grid-productos .card,
+.panel-detalle,
+.card-producto {
+    background: var(--clr-card);
+    border: 1px solid var(--clr-border);
+    border-radius: 1rem;
+}
+
+.tabla-usuarios,
+.tabla-productos {
+    background: var(--clr-card);
+}
+
+/* ====== Buscadores / helpers ====== */
+.maxw-420 {
+    max-width: 420px;
+}
+
+/* ====== Imágenes (sin inline) ====== */
+.object-cover {
+    object-fit: cover;
+}
+
+.avatar-48 {
+    width: 48px;
+    height: 48px;
+}
+
+.avatar-hero {
+    height: 180px;
+}
+
+.thumb-48 {
+    width: 48px;
+    height: 48px;
+}
+
+.producto-hero {
+    height: 200px;
+}
+
+/* ====== Tipitos / acentos ====== */
+.tipo-producto {
+    color: var(--clr-muted);
+}
+
+.precio-producto {
+    color: var(--clr-oliva);
+}
+
+.btn-nuevo {
+    background: var(--clr-verde);
+    border-color: var(--clr-verde);
+}
+
+    .btn-nuevo:hover {
+        filter: brightness(0.95);
+    }
+
+/* ====== Blazor error UI (dejamos del template) ====== */
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0,0,0,0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNz k1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: white;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred."
+    }
+
+/* ====== Safe area iOS ====== */
+.status-bar-safe-area {
+    display: none;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .status-bar-safe-area {
+        display: flex;
+        position: sticky;
+        top: 0;
+        height: env(safe-area-inset-top);
+        background-color: var(--clr-bg);
+        width: 100%;
+        z-index: 1;
+    }
+
+    .flex-column, .navbar-brand {
+        padding-left: env(safe-area-inset-left);
+    }
+}

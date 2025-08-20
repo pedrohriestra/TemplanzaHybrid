@@ -1,0 +1,78 @@
+﻿@using TemplanzaHybrid.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+
+<EditForm class="form-blend"
+          Model="Model"
+          OnValidSubmit="Submit"
+          OnInvalidSubmit="OnInvalid">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <InputText class="form-control" @bind-Value="Model.Nombre" />
+        <ValidationMessage For="() => Model.Nombre" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tipo</label>
+        <InputText class="form-control" @bind-Value="Model.Tipo" />
+        <ValidationMessage For="() => Model.Tipo" />
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Precio</label>
+            <InputNumber class="form-control" @bind-Value="Model.Precio" />
+            <ValidationMessage For="() => Model.Precio" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Stock</label>
+            <InputNumber class="form-control" @bind-Value="Model.Stock" />
+            <ValidationMessage For="() => Model.Stock" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Imagen (URL local)</label>
+        <input class="form-control" list="imgBlends" @bind="Model.ImagenUrl" />
+        <datalist id="imgBlends">
+            @foreach (var url in ImagenesSugeridas)
+            {
+                <option value="@url"></option>
+            }
+        </datalist>
+        <div class="form-text">Ej: /images/productos/green_citrus.png</div>
+        <ValidationMessage For="() => Model.ImagenUrl" />
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">@BotonGuardar</button>
+        <button type="button" class="btn btn-outline-secondary" @onclick="OnCancel">Cancelar</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public Blend Model { get; set; } = new();
+    [Parameter] public bool EsEdicion { get; set; }
+    [Parameter] public EventCallback<Blend> OnSubmit { get; set; }
+    [Parameter] public EventCallback OnCancelClick { get; set; }
+
+    private string BotonGuardar => EsEdicion ? "Guardar cambios" : "Crear";
+
+    // Sugerencias de imágenes (assets en wwwroot/images/productos)
+    private readonly string[] ImagenesSugeridas = new[]
+    {
+        "/images/productos/negro_vainilla.png",
+        "/images/productos/green_citrus.png"
+    };
+
+    private Task Submit() => OnSubmit.InvokeAsync(Model);
+    private Task OnCancel() => OnCancelClick.InvokeAsync();
+
+    // Enfoca el primer error cuando hay validación inválida
+    private async Task OnInvalid(EditContext _)
+        => await JS.InvokeVoidAsync("templanza.focusFirstInvalid");
+}

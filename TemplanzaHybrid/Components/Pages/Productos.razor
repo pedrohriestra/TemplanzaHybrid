@@ -1,0 +1,136 @@
+﻿@page "/productos"
+@using TemplanzaHybrid.Models
+@using Microsoft.JSInterop
+
+@inject TemplanzaHybrid.Services.IBlendsService BlendsSvc
+@inject TemplanzaHybrid.Services.IAuthService Auth
+@inject TemplanzaHybrid.Services.IConfirmService Confirm
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h2 class="titulo-seccion mb-3">Productos</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="input-group buscador-productos maxw-420">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input class="form-control" placeholder="Buscar por nombre o tipo"
+               @bind="_filtro" @bind:event="oninput" />
+        <button class="btn btn-outline-secondary" @onclick="Refrescar">Buscar</button>
+    </div>
+
+    @if (Auth.IsInRole(RolUsuario.Admin))
+    {
+        <button class="btn btn-primary btn-nuevo" @onclick="Nuevo">
+            <i class="bi bi-plus-lg me-1"></i>Nuevo producto
+        </button>
+    }
+</div>
+
+@if (_items is null)
+{
+    <p>Cargando...</p>
+}
+else if (_items.Count == 0)
+{
+    <div class="alert alert-info">No hay productos para mostrar.</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-12 col-lg-7">
+            <table class="table table-hover align-middle tabla-productos">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in _items)
+                    {
+                        <tr class="fila-producto">
+                            <td>@p.Id</td>
+                            <td class="col-thumb">
+                                @if (!string.IsNullOrWhiteSpace(p.ImagenUrl))
+                                {
+                                    <img src="@p.ImagenUrl" alt="@p.Nombre" class="img-thumbnail thumb-48 object-cover" />
+                                }
+                            </td>
+                            <td>@p.Nombre</td>
+                            <td>@p.Tipo</td>
+                            <td>$ @p.Precio</td>
+                            <td>@p.Stock</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-secondary me-1" @onclick="() => Ver(p)">Ver</button>
+                                @if (Auth.IsInRole(RolUsuario.Admin))
+                                {
+                                    <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => Editar(p.Id)">Editar</button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => Eliminar(p.Id)">Eliminar</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-12 col-lg-5">
+            @if (_sel is not null)
+            {
+                <div class="card panel-detalle">
+                    @if (!string.IsNullOrWhiteSpace(_sel.ImagenUrl))
+                    {
+                        <img src="@_sel.ImagenUrl" alt="@_sel.Nombre" class="card-img-top producto-hero object-cover" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">@_sel.Nombre</h5>
+                        <p class="text-muted mb-1">Tipo: @_sel.Tipo</p>
+                        <p class="mb-1">Precio: <strong>$ @_sel.Precio</strong></p>
+                        <span class="badge text-bg-secondary">Stock: @_sel.Stock</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary">Seleccioná un producto para ver el detalle.</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<Blend>? _items;
+    private Blend? _sel;
+    private string? _filtro;
+
+    protected override async Task OnInitializedAsync()
+        => await Refrescar();
+
+    private async Task Refrescar()
+    {
+        _items = (await BlendsSvc.GetAllAsync(_filtro)).ToList();
+        _sel = _items.FirstOrDefault();
+    }
+
+    private void Ver(Blend p) => _sel = p;
+
+    private void Nuevo() => Nav.NavigateTo("/productos/nuevo");
+
+    private void Editar(int id) => Nav.NavigateTo($"/productos/editar/{id}");
+
+    private async Task Eliminar(int id)
+    {
+        if (!await Confirm.ConfirmAsync("¿Eliminar este producto?")) return;
+
+        if (await BlendsSvc.DeleteAsync(id))
+        {
+            await JS.InvokeVoidAsync("templanza.notify", "Producto eliminado", "Productos");
+            await Refrescar();
+        }
+    }
+}

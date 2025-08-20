@@ -1,0 +1,67 @@
+﻿@page "/login"
+@inject IAuthService Auth
+@inject NavigationManager Nav
+
+<h2 class="titulo-seccion mb-3">Login</h2>
+
+@if (Auth.IsAuthenticated)
+{
+    <div class="alert alert-success">Ya estás logueado como <strong>@Auth.UsuarioActual!.Nombre</strong>.</div>
+    <button class="btn btn-outline-danger" @onclick="Logout">Cerrar sesión</button>
+}
+else
+{
+    <EditForm Model="_vm" OnValidSubmit="DoLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <InputText @bind-Value="_vm.Email" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <InputText @bind-Value="_vm.Password" type="password" class="form-control" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="alert alert-danger">@_error</div>
+        }
+
+        <button type="submit" class="btn btn-primary">Ingresar</button>
+    </EditForm>
+}
+
+@code {
+    private LoginVM _vm = new();
+    private string? _error;
+
+    private async Task DoLogin()
+    {
+        _error = null;
+        var ok = await Auth.SignInAsync(_vm.Email, _vm.Password);
+        if (!ok)
+        {
+            _error = "Email o contraseña inválidos, o usuario inactivo.";
+            return;
+        }
+        Nav.NavigateTo("/", forceLoad: true);
+    }
+
+    private async Task Logout()
+    {
+        await Auth.SignOutAsync();
+        Nav.NavigateTo("/", forceLoad: true);
+    }
+
+    public class LoginVM
+    {
+        [System.ComponentModel.DataAnnotations.Required, System.ComponentModel.DataAnnotations.EmailAddress]
+        public string Email { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Password { get; set; } = "";
+    }
+}

@@ -1,0 +1,88 @@
+﻿@inherits LayoutComponentBase
+@inject IAuthService Auth
+@implements IDisposable
+@inject IAuthService Auth
+@inject NavigationManager Nav
+
+<div class="min-vh-100 d-flex flex-column">
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/">Templanza</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="nav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><NavLink class="nav-link" href="/">Home</NavLink></li>
+                        <li class="nav-item"><NavLink class="nav-link" href="/productos">Productos</NavLink></li>
+
+                        @* Mostramos la entrada Usuarios en el menú solo si está logueado como Admin *@
+                        @if (Auth.IsInRole(RolUsuario.Admin))
+                        {
+                            <li class="nav-item"><NavLink class="nav-link" href="/usuarios">Usuarios (Admin)</NavLink></li>
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        @if (!Auth.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <NavLink class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right me-1"></i>Login</NavLink>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle me-1"></i>@Auth.UsuarioActual!.Nombre
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="/login" @onclick="OnLogout" @onclick:preventDefault>Logout</a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-fill">
+        <div class="container py-4">
+            @Body
+        </div>
+    </main>
+
+    <footer class="bg-light border-top py-3">
+        <div class="container small text-muted">
+            © @DateTime.Now.Year · Templanza Hybrid
+        </div>
+    </footer>
+
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Auth.AuthenticationStateChanged += OnAuthChanged;
+        if (!Auth.IsInRole(RolUsuario.Admin))
+            Nav.NavigateTo("/login");
+    }
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task OnLogout()
+    {
+        await Auth.SignOutAsync();
+        // refrescamos la vista
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Auth.AuthenticationStateChanged -= OnAuthChanged;
+    }
+}
