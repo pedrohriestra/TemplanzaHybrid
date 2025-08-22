@@ -1,47 +1,43 @@
-Templanza Hybrid 🌿
+# Templanza Hybrid
 
-App .NET MAUI + Blazor Hybrid para un mini sistema de blends y usuarios. UI con Bootstrap 5 + Icons, paleta propia y fondo .webp. Pensada para mostrar en Windows (BlazorWebView).
+**Templanza Hybrid** es una aplicación **.NET MAUI + Blazor Hybrid** que presenta un mini-sistema para una marca de blends: catálogo de productos, administración de usuarios y autenticación básica, con UI basada en **Bootstrap 5** y una paleta visual propia.
 
-¿Qué incluye? ✨
+## Objetivo del proyecto
+- Combinar host nativo **MAUI** con UI web declarativa (**Blazor**) en una sola app.
+- Explorar un catálogo de productos con búsqueda y panel de detalle.
+- Administrar usuarios y roles (Admin/User).
+- Autenticar y gestionar el perfil del usuario logueado.
+- Mantener una identidad visual consistente (paleta, fondos, componentes).
 
-🏠 Home
+## Funcionalidades
+- **Productos**: listado, filtro por texto, detalle lateral y alta/edición/eliminación (solo Admin).
+- **Usuarios (Admin)**: listado con búsqueda, detalle y CRUD.
+- **Mi perfil**: edición de datos del usuario autenticado.
+- **Autenticación**: login simple en memoria y control de roles.
+- **Selección de imágenes**: datalist + miniaturas clickeables leyendo archivos reales desde `wwwroot/images`.
 
-🛍️ Productos: listado + búsqueda, detalle al costado, CRUD Admin, selección de imagen desde wwwroot/images/productos (datalist + miniaturas).
+## Arquitectura y tecnologías
+- **Host**: .NET **MAUI** (aplicación nativa multiplataforma).
+- **UI**: **Blazor WebView** (componentes Razor embebidos).
+- **Servicios** (capa en memoria):
+  - `UsuariosService`, `BlendsService`: gestión de entidades mock/in-memory.
+  - `AuthService` (`IAuthService`): sesión actual, autenticación y roles.
+  - `StaticAssetsService` (`IStaticAssetsService`): índice de imágenes desde `wwwroot` (por `index.json` y/o enumeración de carpetas).
+  - `ConfirmService` (`IConfirmService`): confirmaciones/toasts vía JS con fallback nativo (registrado como Scoped).
+- **UI/Componentes**:
+  - `MainLayout.razor`: navbar con vínculos condicionales por rol y `@Body`.
+  - Formularios: `BlendForm.razor`, `UsuarioForm.razor` (validaciones, datalist, miniaturas).
+  - Ruteo: `Routes.razor` con `Router`, `RouteView` y `NotFound`.
+- **Estilos**: `Bootstrap 5` + `Bootstrap Icons` + `app.css` (tokens de color, superficies, overlay de fondo).
 
-👥 Usuarios (Admin): listado + búsqueda, detalle, CRUD, selección de avatar desde wwwroot/images/usuarios.
+## Navegación y roles
+- Menú principal: Home, Productos (todos).
+- Ítems condicionales:
+  - **Mi perfil**: visible al estar autenticado.
+  - **Usuarios (Admin)**: visible solo para rol **Admin**.
+- Acciones sensibles (Crear/Editar/Eliminar) se muestran según rol.
 
-🔐 Login simple (en memoria), roles Admin/User, Mi perfil, botón Salir en el navbar.
-
-🎨 Paleta de colores propia + overlay para legibilidad; toasts/confirm JS con fallback nativo.
-
-Cómo correrlo ▶️
-
-Requisitos: .NET 9 + workload MAUI.
-
-Abrí en VS 2022 → perfil Windows Machine → Run.
-
-Android/iOS opcional (el TP se presenta en Windows).
-
-Tech stack 🧱
-
-MAUI host + Blazor WebView UI.
-
-Servicios: Usuarios, Blends, Auth (sesión/roles), Confirm (Scoped, usa JS con fallback), StaticAssets (lista imágenes desde wwwroot o index.json).
-
-Estructura mínima 📁
-
-Components/ (Layout, Forms, Routes)
-
-Pages/ (Productos, Usuarios, Login, Perfil)
-
-Services/ (Auth, Blends, Usuarios, Confirm, StaticAssets)
-
-wwwroot/ (css/app.css, js/templanza.js, images/, index.html, opcional index.json)
-
-Tips 🛠️
-
-Si ves “Loading…”: verificá que el Layout tenga @Body y que en index.html el último script sea _framework/blazor.webview.js.
-
-Si “Salir” daba 404: ahora ejecuta logout directo (no navega a /logout).
-
-Error “Cannot invoke JavaScript outside of a WebView context.”: asegurá ConfirmService registrado como Scoped.
+## Gestión de imágenes
+- Carpeta `wwwroot/images` con subcarpetas `productos/` y `usuarios/`.
+- Opcional `wwwroot/index.json` para indexar recursos.
+- Formularios con datalist y miniaturas para seleccionar la imagen/avatares.
