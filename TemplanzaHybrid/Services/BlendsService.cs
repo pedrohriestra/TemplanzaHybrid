@@ -14,7 +14,7 @@ namespace TemplanzaHybrid.Services
             {
                 new Blend { Id=_nextId++, Nombre="Té Negro y Vainilla", Tipo="5gr",
                             Precio=3500, Stock=20,
-                            ImagenUrl="/images/productos/negro-vainilla.png" },
+                            ImagenUrl="/images/productos/negro_vainilla.png" },
                 new Blend { Id=_nextId++, Nombre="menta", Tipo="5gr",
                             Precio=3200, Stock=15,
                             ImagenUrl="/images/productos/menta.png" },

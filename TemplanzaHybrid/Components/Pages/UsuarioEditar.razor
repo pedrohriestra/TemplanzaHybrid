@@ -12,40 +12,46 @@
 {
     <div class="alert alert-danger">Acceso restringido. Solo admin.</div>
 }
-else if (_model is null && Id.HasValue)
+else if (_vm is null && Id.HasValue)
 {
     <div class="alert alert-warning">Usuario no encontrado.</div>
 }
 else
 {
-    <UsuarioForm Model="_model" EsEdicion="@EsEdicion"
+    <UsuarioForm Model="_vm!" EsEdicion="@EsEdicion"
                  OnSubmit="Guardar" OnCancelClick="Volver" />
 }
 
 @code {
     [Parameter] public int? Id { get; set; }
-    private Usuario _model = new();
+    private Usuario? _vm;
     private bool EsEdicion => Id.HasValue;
     private string Titulo => EsEdicion ? "Editar usuario" : "Nuevo usuario";
 
     protected override async Task OnInitializedAsync()
     {
-        if (!Auth.IsInRole(RolUsuario.Admin))
-            return;
+        if (!Auth.IsInRole(RolUsuario.Admin)) return;
 
         if (EsEdicion)
         {
             var u = await UsuariosSvc.GetByIdAsync(Id!.Value);
-            if (u is not null) _model = new Usuario
+            if (u is not null)
             {
-                Id = u.Id,
-                Nombre = u.Nombre,
-                Email = u.Email,
-                Password = u.Password,
-                Rol = u.Rol,
-                ImagenUrl = u.ImagenUrl,
-                Activo = u.Activo
-            };
+                _vm = new Usuario
+                {
+                    Id = u.Id,
+                    Nombre = u.Nombre,
+                    Email = u.Email,
+                    Rol = u.Rol,
+                    Activo = u.Activo,
+                    ImagenUrl = u.ImagenUrl,
+                    Password = u.Password // si manejás texto plano para demo
+                };
+            }
+        }
+        else
+        {
+            _vm = new Usuario { Activo = true, Rol = RolUsuario.Usuario};
         }
     }
 
