@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject TemplanzaHybrid.Services.IAuthService Auth
+@inject NavigationManager Nav
 @using Microsoft.AspNetCore.Components.Routing
 
 <header>
@@ -29,7 +30,15 @@
                     @if (Auth.IsAuthenticated)
                     {
                         <li class="nav-item"><NavLink class="nav-link" href="/perfil">Mi perfil</NavLink></li>
-                        <li class="nav-item"><a class="nav-link" href="/logout">Salir</a></li>
+
+                        <!-- Salir SIN navegar a /logout -->
+                        <li class="nav-item">
+                            <a href="" class="nav-link"
+                               @onclick="OnLogout"
+                               @onclick:preventDefault>
+                                Salir
+                            </a>
+                        </li>
                     }
                     else
                     {
@@ -49,3 +58,12 @@
 <footer class="text-center py-3 small text-muted">
     © 2025 · Templanza Hybrid
 </footer>
+
+@code {
+    private async Task OnLogout()
+    {
+        await Auth.SignOutAsync();
+        // redirigí donde prefieras: home o login
+        Nav.NavigateTo("/login", forceLoad: true);
+    }
+}
