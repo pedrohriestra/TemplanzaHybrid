@@ -25,7 +25,7 @@ namespace TemplanzaHybrid
             builder.Services.AddSingleton<IUsuariosService, UsuariosService>();
             builder.Services.AddSingleton<IBlendsService, BlendsService>();
             builder.Services.AddSingleton<IAuthService, AuthService>();
-            builder.Services.AddSingleton<IConfirmService, ConfirmService>();
+            builder.Services.AddScoped<IConfirmService, ConfirmService>();
             builder.Services.AddSingleton<IStaticAssetsService, StaticAssetsService>();
 
             return builder.Build();

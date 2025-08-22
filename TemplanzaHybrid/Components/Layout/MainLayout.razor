@@ -1,31 +1,51 @@
-﻿@inject TemplanzaHybrid.Services.IAuthService Auth
+﻿@inherits LayoutComponentBase
+@inject TemplanzaHybrid.Services.IAuthService Auth
+@using Microsoft.AspNetCore.Components.Routing
 
-<ul class="navbar-nav me-auto">
-  <li class="nav-item"><NavLink class="nav-link" href="/">Home</NavLink></li>
-  <li class="nav-item"><NavLink class="nav-link" href="/productos">Productos</NavLink></li>
+<header>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">Templanza</a>
 
-  @if (Auth.IsInRole(RolUsuario.Admin))
-  {
-    <li class="nav-item"><NavLink class="nav-link" href="/usuarios">Usuarios (Admin)</NavLink></li>
-  }
-</ul>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                    aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-<ul class="navbar-nav ms-auto">
-@if (Auth.IsAuthenticated)
-{
-  <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-      <i class="bi bi-person-circle me-1"></i>@(Auth.UsuarioActual?.Nombre ?? "Usuario")
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="/perfil"><i class="bi bi-card-text me-2"></i>Mi perfil</a></li>
-      @if (Auth.IsInRole(RolUsuario.Admin))
-      {
-        <li><a class="dropdown-item" href="/usuarios"><i class="bi bi-people me-2"></i>Usuarios (Admin)</a></li>
-      }
-      <li><hr class="dropdown-divider" /></li>
-      <li><a class="dropdown-item" href="/logout">Salir</a></li>
-    </ul>
-  </li>
-}
-</ul>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><NavLink class="nav-link" href="/">Home</NavLink></li>
+                    <li class="nav-item"><NavLink class="nav-link" href="/productos">Productos</NavLink></li>
+
+                    @if (Auth.IsInRole(RolUsuario.Admin))
+                    {
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/usuarios">Usuarios (Admin)</NavLink>
+                        </li>
+                    }
+                </ul>
+
+                <ul class="navbar-nav ms-auto">
+                    @if (Auth.IsAuthenticated)
+                    {
+                        <li class="nav-item"><NavLink class="nav-link" href="/perfil">Mi perfil</NavLink></li>
+                        <li class="nav-item"><a class="nav-link" href="/logout">Salir</a></li>
+                    }
+                    else
+                    {
+                        <li class="nav-item"><NavLink class="nav-link" href="/login">Ingresar</NavLink></li>
+                        <li class="nav-item"><NavLink class="nav-link" href="/registro">Registrarme</NavLink></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container py-4">
+    @Body
+</main>
+
+<footer class="text-center py-3 small text-muted">
+    © 2025 · Templanza Hybrid
+</footer>
