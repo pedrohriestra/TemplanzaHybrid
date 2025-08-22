@@ -1,0 +1,94 @@
+﻿@page "/registro"
+@using System.ComponentModel.DataAnnotations
+@inject TemplanzaHybrid.Services.IAuthService Auth
+@inject TemplanzaHybrid.Services.IStaticAssetsService Assets
+@inject Microsoft.JSInterop.IJSRuntime JS
+@inject NavigationManager Nav
+
+<h2 class="titulo-seccion mb-3">Crear cuenta</h2>
+
+@if (!string.IsNullOrEmpty(_error))
+{
+    <div class="alert alert-danger">@_error</div>
+}
+
+<EditForm Model="_vm" OnValidSubmit="Registrar" OnInvalidSubmit="OnInvalid">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <InputText class="form-control" @bind-Value="_vm.Nombre" />
+        <ValidationMessage For="() => _vm.Nombre" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText class="form-control" @bind-Value="_vm.Email" />
+        <ValidationMessage For="() => _vm.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <InputText class="form-control" type="password" @bind-Value="_vm.Password" />
+        <ValidationMessage For="() => _vm.Password" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Imagen (opcional)</label>
+        <InputText class="form-control" placeholder="/images/usuarios/juana.webp" @bind-Value="_vm.ImagenUrl" />
+        <div class="form-text">Podés elegir de la galería o pegar una ruta manual.</div>
+
+        @if (_avatars?.Count > 0)
+        {
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                @foreach (var url in _avatars)
+                {
+                    <img src="@url"
+                         class="img-thumbnail avatar-48 object-cover selectable @(_vm.ImagenUrl == url ? "selected" : "")"
+                         title="@url"
+                         @onclick="() => _vm.ImagenUrl = url" />
+                }
+            </div>
+        }
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">Crear cuenta</button>
+        <a class="btn btn-gris" href="/login">Volver</a>
+    </div>
+</EditForm>
+
+@code {
+    private readonly RegistroVm _vm = new();
+    private List<string>? _avatars;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+        => _avatars = (await Assets.GetUsuarioImagesAsync()).ToList();
+
+    private async Task Registrar()
+    {
+        _error = null;
+        var (ok, err) = await Auth.RegisterAsync(_vm.Nombre!, _vm.Email!, _vm.Password!, _vm.ImagenUrl);
+        if (ok) Nav.NavigateTo("/");
+        else _error = err ?? "No se pudo registrar.";
+    }
+
+    private Task OnInvalid(EditContext _)
+        => JS.InvokeVoidAsync("templanza.focusFirstInvalid").AsTask();
+
+    private class RegistroVm
+    {
+        [Required, StringLength(60, MinimumLength = 2)]
+        public string? Nombre { get; set; }
+
+        [Required, EmailAddress]
+        public string? Email { get; set; }
+
+        [Required, StringLength(50, MinimumLength = 6)]
+        public string? Password { get; set; }
+
+        public string? ImagenUrl { get; set; }
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "productos": [
+    "/images/productos/menta.png",
+    "/images/productos/negro-vainilla.png",
+    "/images/productos/frutos-rojos.png"
+  ],
+  "usuarios": [
+    "/images/usuarios/admin1.png",
+    "/images/usuarios/pedro.png",
+    "/images/usuarios/juli3p.png"
+  ]
+}

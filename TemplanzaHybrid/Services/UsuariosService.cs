@@ -14,10 +14,10 @@ namespace TemplanzaHybrid.Services
             {
                 new Usuario { Id=_nextId++, Nombre="Admin", Email="admin@demo.com",
                               Password="admin123", Rol=RolUsuario.Admin,
-                              ImagenUrl="/images/usuarios/admin.webp" },
+                              ImagenUrl="/images/usuarios/admim.png" },
                 new Usuario { Id=_nextId++, Nombre="Pedro", Email="Pedro@demo.com",
                               Password="1234", Rol=RolUsuario.Usuario,
-                              ImagenUrl="/images/usuarios/juana.webp" },
+                              ImagenUrl="/images/usuarios/pedro.png" },
             });
         }
 

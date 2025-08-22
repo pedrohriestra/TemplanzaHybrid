@@ -78,8 +78,7 @@ h1:focus {
     color: var(--clr-oro);
 }
 
-.navbar-dark .nav-link.active,
-.navbar-dark .nav-link.show {
+.navbar-dark .nav-link.active, .navbar-dark .nav-link.show {
     color: var(--clr-oro) !important;
 }
 
@@ -90,16 +89,13 @@ h1:focus {
 }
 
 /* ====== Cards / paneles / tablas ====== */
-.grid-productos .card,
-.panel-detalle,
-.card-producto {
+.grid-productos .card, .panel-detalle, .card-producto {
     background: var(--clr-card);
     border: 1px solid var(--clr-border);
     border-radius: 1rem;
 }
 
-.tabla-usuarios,
-.tabla-productos {
+.tabla-usuarios, .tabla-productos {
     background: var(--clr-card);
 }
 
@@ -176,10 +172,10 @@ h1:focus {
 }
 
     .blazor-error-boundary::after {
-        content: "An error has occurred."
+        content: "An error has occurred.";
     }
 
-/* ====== Safe area iOS ====== */
+/* ===== Safe area iOS ===== */
 .status-bar-safe-area {
     display: none;
 }
@@ -199,3 +195,71 @@ h1:focus {
         padding-left: env(safe-area-inset-left);
     }
 }
+
+/* ===== Fondo global con overlay para legibilidad ===== */
+:root {
+    --bg-img: url('/images/fondo-home.webp');
+    --bg-tint: rgba(255, 255, 255, .40);
+}
+
+html, body {
+    min-height: 100%;
+}
+
+    /* capa imagen (debajo de todo) */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background: var(--bg-img) center/cover no-repeat, var(--clr-bg);
+        transform: translateZ(0);
+    }
+    /* capa de tinte/velo para que el texto y cards se lean siempre */
+    body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background: radial-gradient(80% 60% at 10% 0%, rgba(255,255,255,.25), transparent 60%), linear-gradient(var(--bg-tint), var(--bg-tint));
+        pointer-events: none;
+    }
+
+/* superficies (cards, tablas, paneles) un toque “glass” */
+.card, .panel-detalle, .tabla-usuarios, .tabla-productos {
+    background: rgba(255,255,255,.92);
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    backdrop-filter: saturate(1.2) blur(2px);
+}
+
+/* ===== NUEVO: botón gris fijo ===== */
+.btn-gris {
+    --gris: var(--clr-muted); /* #6c757d */
+    background-color: var(--gris) !important;
+    border-color: var(--gris) !important;
+    color: #fff !important;
+}
+
+    .btn-gris:hover,
+    .btn-gris:focus,
+    .btn-gris:active,
+    .btn-gris:disabled {
+        background-color: var(--gris) !important;
+        border-color: var(--gris) !important;
+        color: #fff !important;
+        filter: brightness(.95);
+    }
+
+.selectable {
+    cursor: pointer;
+    transition: transform .05s ease;
+}
+
+    .selectable:hover {
+        transform: scale(1.03);
+    }
+
+    .selectable.selected {
+        outline: 2px solid var(--clr-verde);
+    }

@@ -12,12 +12,12 @@ namespace TemplanzaHybrid.Services
         {
             _items.AddRange(new[]
             {
-                new Blend { Id=_nextId++, Nombre="Té Negro Vainilla", Tipo="Negro",
+                new Blend { Id=_nextId++, Nombre="Té Negro y Vainilla", Tipo="5gr",
                             Precio=3500, Stock=20,
-                            ImagenUrl="/images/productos/negro_vainilla.webp" },
-                new Blend { Id=_nextId++, Nombre="Green Citrus", Tipo="Verde",
+                            ImagenUrl="/images/productos/negro-vainilla.png" },
+                new Blend { Id=_nextId++, Nombre="menta", Tipo="5gr",
                             Precio=3200, Stock=15,
-                            ImagenUrl="/images/productos/green_citrus.webp" },
+                            ImagenUrl="/images/productos/menta.png" },
             });
         }
 

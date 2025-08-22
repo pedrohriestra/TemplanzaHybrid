@@ -1,7 +1,6 @@
 ﻿@namespace TemplanzaHybrid.Components
 @using System.Reflection
 @using TemplanzaHybrid.Components.Layout
-@using TemplanzaHybrid.Components
 
 <Router AppAssembly="@ThisAssembly">
     <Found Context="routeData">
@@ -19,5 +18,5 @@
 </Router>
 
 @code {
-    private static readonly Assembly ThisAssembly = typeof(TemplanzaHybrid.MainPage).Assembly;
+    private static readonly Assembly ThisAssembly = typeof(Routes).Assembly;
 }

@@ -1,0 +1,127 @@
+﻿@page "/perfil"
+@using TemplanzaHybrid.Models
+@inject TemplanzaHybrid.Services.IAuthService Auth
+@inject TemplanzaHybrid.Services.IUsuariosService Usuarios
+@inject TemplanzaHybrid.Services.IStaticAssetsService Assets
+@inject Microsoft.JSInterop.IJSRuntime JS
+@inject NavigationManager Nav
+
+<h2 class="titulo-seccion mb-3">Mi perfil</h2>
+
+@if (!Auth.IsAuthenticated)
+{
+    <div class="alert alert-warning">Debés iniciar sesión para ver tu perfil.</div>
+}
+else if (_model is null)
+{
+    <p>Cargando…</p>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-12 col-lg-5">
+            <div class="card panel-detalle">
+                @if (!string.IsNullOrWhiteSpace(_model.ImagenUrl))
+                {
+                    <img src="@_model.ImagenUrl" alt="@_model.Nombre" class="card-img-top avatar-hero object-cover" />
+                }
+                <div class="card-body">
+                    <h5 class="card-title mb-1">@_model.Nombre</h5>
+                    <p class="text-muted mb-1">@_model.Email</p>
+                    <span class="badge text-bg-secondary">@_model.Rol</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-7">
+            <EditForm Model="_model" OnValidSubmit="Guardar" OnInvalidSubmit="OnInvalid">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <InputText class="form-control" @bind-Value="_model.Nombre" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <InputText class="form-control" @bind-Value="_model.Email" disabled />
+                    <div class="form-text">El email no se puede cambiar.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nueva contraseña (opcional)</label>
+                    <InputText class="form-control" type="password" @bind-Value="_newPass" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Imagen</label>
+                    <input class="form-control" list="imgUsers" @bind="_model.ImagenUrl" />
+                    <datalist id="imgUsers">
+                        @foreach (var u in _imgs)
+                        {
+                            <option value="@u"></option>
+                        }
+                    </datalist>
+
+                    @if (_imgs.Count > 0)
+                    {
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            @foreach (var u in _imgs)
+                            {
+                                <img src="@u"
+                                     class="img-thumbnail avatar-48 object-cover selectable @(_model.ImagenUrl==u ? "selected" : "")"
+                                     title="@u"
+                                     @onclick="()=> _model.ImagenUrl = u" />
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                    <a class="btn btn-gris" href="/">Cancelar</a>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private Usuario? _model;
+    private List<string> _imgs = new();
+    private string? _newPass;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsAuthenticated) return;
+
+        var u = Auth.UsuarioActual!;
+        _model = new Usuario
+        {
+            Id = u.Id, Nombre = u.Nombre, Email = u.Email,
+            Password = u.Password, Rol = u.Rol, ImagenUrl = u.ImagenUrl, Activo = u.Activo
+        };
+
+        _imgs = (await Assets.GetUsuarioImagesAsync()).ToList();
+        if (string.IsNullOrWhiteSpace(_model.ImagenUrl) && _imgs.Count > 0)
+            _model.ImagenUrl = _imgs[0];
+    }
+
+    private async Task Guardar()
+    {
+        if (_model is null) return;
+        if (!string.IsNullOrWhiteSpace(_newPass))
+            _model.Password = _newPass;
+
+        var ok = await Usuarios.UpdateAsync(_model);
+        if (ok)
+        {
+            await Auth.SignInAsync(_model.Email, _model.Password); // refresca datos
+            Nav.NavigateTo("/");
+        }
+    }
+
+    private Task OnInvalid(EditContext _)
+        => JS.InvokeVoidAsync("templanza.focusFirstInvalid").AsTask();
+}

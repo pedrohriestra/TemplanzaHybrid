@@ -8,7 +8,6 @@ namespace TemplanzaHybrid
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
-
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -20,16 +19,14 @@ namespace TemplanzaHybrid
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
-            // Devtools y logging SOLO en Debug
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
-
-            // DI
             builder.Services.AddSingleton<IUsuariosService, UsuariosService>();
             builder.Services.AddSingleton<IBlendsService, BlendsService>();
             builder.Services.AddSingleton<IAuthService, AuthService>();
             builder.Services.AddSingleton<IConfirmService, ConfirmService>();
+            builder.Services.AddSingleton<IStaticAssetsService, StaticAssetsService>();
 
             return builder.Build();
         }

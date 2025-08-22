@@ -2,11 +2,10 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
+@inject TemplanzaHybrid.Services.IStaticAssetsService Assets
 
-<EditForm class="form-blend"
-          Model="Model"
-          OnValidSubmit="Submit"
-          OnInvalidSubmit="OnInvalid">
+<EditForm class="form-blend" Model="Model"
+          OnValidSubmit="Submit" OnInvalidSubmit="OnInvalid">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -39,12 +38,26 @@
         <label class="form-label">Imagen (URL local)</label>
         <input class="form-control" list="imgBlends" @bind="Model.ImagenUrl" />
         <datalist id="imgBlends">
-            @foreach (var url in ImagenesSugeridas)
+            @foreach (var url in _disponibles)
             {
                 <option value="@url"></option>
             }
         </datalist>
-        <div class="form-text">Ej: /images/productos/green_citrus.png</div>
+        <div class="form-text">Elegí de la galería o pegá una ruta.</div>
+
+        @if (_disponibles.Count > 0)
+        {
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                @foreach (var url in _disponibles)
+                {
+                    <img src="@url"
+                         class="img-thumbnail thumb-48 object-cover selectable @(Model.ImagenUrl == url ? "selected" : "")"
+                         title="@url"
+                         @onclick="() => Model.ImagenUrl = url" />
+                }
+            </div>
+        }
+
         <ValidationMessage For="() => Model.ImagenUrl" />
     </div>
 
@@ -61,18 +74,16 @@
     [Parameter] public EventCallback OnCancelClick { get; set; }
 
     private string BotonGuardar => EsEdicion ? "Guardar cambios" : "Crear";
+    private List<string> _disponibles = new();
 
-    // Sugerencias de imágenes (assets en wwwroot/images/productos)
-    private readonly string[] ImagenesSugeridas = new[]
+    protected override async Task OnInitializedAsync()
     {
-        "/images/productos/negro_vainilla.png",
-        "/images/productos/green_citrus.png"
-    };
+        _disponibles = (await Assets.GetProductoImagesAsync()).ToList();
+        if (string.IsNullOrWhiteSpace(Model.ImagenUrl) && _disponibles.Count > 0)
+            Model.ImagenUrl = _disponibles[0];
+    }
 
     private Task Submit() => OnSubmit.InvokeAsync(Model);
     private Task OnCancel() => OnCancelClick.InvokeAsync();
-
-    // Enfoca el primer error cuando hay validación inválida
-    private async Task OnInvalid(EditContext _)
-        => await JS.InvokeVoidAsync("templanza.focusFirstInvalid");
+    private Task OnInvalid(EditContext _) => JS.InvokeVoidAsync("templanza.focusFirstInvalid").AsTask();
 }

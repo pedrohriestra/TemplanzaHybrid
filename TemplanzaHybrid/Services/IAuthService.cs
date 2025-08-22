@@ -12,5 +12,12 @@ namespace TemplanzaHybrid.Services
 
         Task<bool> SignInAsync(string email, string password);
         Task SignOutAsync();
+
+        // Registro con autologin (rol Cliente por defecto)
+        Task<(bool ok, string? error)> RegisterAsync(
+            string nombre,
+            string email,
+            string password,
+            string? imagenUrl = null);
     }
 }
